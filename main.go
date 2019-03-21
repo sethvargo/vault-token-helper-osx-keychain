@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/user"
+	"strings"
 
 	"github.com/keybase/go-keychain"
 	"github.com/pkg/errors"
@@ -42,6 +43,8 @@ func provideVaultAddress() string {
 		return defaultVaultServer
 	}
 
+	addr = strings.TrimSpace(addr)
+	addr = strings.ToLower(addr)
 	return addr
 }
 
