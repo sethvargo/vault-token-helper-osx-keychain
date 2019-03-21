@@ -20,9 +20,10 @@ var (
 	// will be stored.
 	account string
 
-	service     = "HashiCorp Vault"
 	accessGroup = "com.sethvargo.vault-token-helper-osx-keychain"
 )
+
+const defaultVaultServer = "Default HashiCorp Vault Server"
 
 func init() {
 	// Get the current user. This requires cgo, but we already need cgo because
@@ -34,7 +35,18 @@ func init() {
 	account = u.Username
 }
 
+func provideVaultAddress() string {
+	addr, isSet := os.LookupEnv("VAULT_ADDR")
+
+	if !isSet {
+		return defaultVaultServer
+	}
+
+	return addr
+}
+
 func main() {
+
 	if err := realMain(); err != nil {
 		fmt.Fprintf(stderr, err.Error())
 		os.Exit(1)
@@ -139,9 +151,9 @@ func handleErase() error {
 func keychainItem() keychain.Item {
 	item := keychain.NewItem()
 	item.SetSecClass(keychain.SecClassGenericPassword)
-	item.SetService(service)
+	item.SetService(provideVaultAddress())
 	item.SetAccount(account)
-	item.SetLabel(service)
+	item.SetLabel(provideVaultAddress())
 	item.SetAccessGroup(accessGroup)
 	item.SetSynchronizable(keychain.SynchronizableNo)
 	item.SetAccessible(keychain.AccessibleWhenUnlockedThisDeviceOnly)
