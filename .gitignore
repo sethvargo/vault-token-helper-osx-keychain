@@ -21,3 +21,7 @@ vendor/
 tmp/
 bin/
 pkg/
+
+
+.idea
+

@@ -21,7 +21,7 @@ var (
 	// will be stored.
 	account string
 
-	accessGroup = "com.sethvargo.vault-token-helper-osx-keychain"
+	accessGroup = "com.hootsuite.vault-token-helper-osx-keychain"
 )
 
 const defaultVaultServer = "Default HashiCorp Vault Server"
