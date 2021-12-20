@@ -8,7 +8,6 @@ import (
 	"os/user"
 
 	"github.com/keybase/go-keychain"
-	"github.com/pkg/errors"
 )
 
 var (
@@ -36,7 +35,7 @@ func init() {
 
 func main() {
 	if err := realMain(); err != nil {
-		fmt.Fprintf(stderr, err.Error())
+		fmt.Fprintln(stderr, err.Error())
 		os.Exit(1)
 	}
 	os.Exit(0)
@@ -70,7 +69,7 @@ func handleGet() error {
 
 	results, err := keychain.QueryItem(query)
 	if err != nil {
-		return errors.Wrap(err, "failed to query keychain")
+		return fmt.Errorf("failed to query keychain: %w", err)
 	}
 	if len(results) == 0 {
 		return nil
@@ -86,7 +85,7 @@ func handleStore() error {
 	r := bufio.NewReader(stdin)
 	value, err := r.ReadString('\n')
 	if err != nil && err != io.EOF {
-		return errors.Wrap(err, "failed to read value from stdin")
+		return fmt.Errorf("failed to read value from stdin: %w", err)
 	}
 
 	item := keychainItem()
@@ -103,21 +102,21 @@ func handleStore() error {
 
 		results, err := keychain.QueryItem(query)
 		if err != nil {
-			return errors.Wrap(err, "failed to query keychain")
+			return fmt.Errorf("failed to query keychain: %w", err)
 		}
 		if len(results) == 0 {
-			return errors.New("no results")
+			return fmt.Errorf("no results")
 		}
 
 		if err := keychain.UpdateItem(query, item); err != nil {
-			return errors.Wrap(err, "failed to update item in keychain")
+			return fmt.Errorf("failed to update item in keychain: %w", err)
 		}
 		return nil
 	}
 
 	// Handle any other errors
 	if err != nil {
-		return errors.Wrap(err, "failed to add item to keychain")
+		return fmt.Errorf("failed to add item to keychain: %w", err)
 	}
 
 	return nil
@@ -129,7 +128,7 @@ func handleStore() error {
 func handleErase() error {
 	item := keychainItem()
 	if err := keychain.DeleteItem(item); err != nil {
-		return errors.Wrap(err, "failed to delete item")
+		return fmt.Errorf("failed to delete item: %w", err)
 	}
 	return nil
 }
